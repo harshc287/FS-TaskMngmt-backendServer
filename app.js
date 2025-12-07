@@ -3,8 +3,10 @@ require('dotenv').config();
 const cors = require('cors')
 const taskRoutes = require('./routes/taskRoutes')
 const userRoutes = require("./routes/userRoute")
-const {testConnection} = require('./config/db')
+const {testConnection, syncDB} = require('./config/db')
 testConnection();
+
+syncDB()
 
 const app = express();
 const port = process.env.PORT || 7000

@@ -12,10 +12,12 @@ name:{
     type: DataTypes.STRING,
     allowNull: false,
 
+
 },
 email:{
     type:DataTypes.STRING,
     allowNull:false,
+    unique:true
 
 },
 password:{
@@ -23,6 +25,11 @@ password:{
     allowNull:false,
 
 },
-})
+    role:{
+        type: DataTypes.ENUM("admin", "user"),
+        defaultValue: "user"
+    }
+
+} , {tableName : "users", timestamps: true})
 
 module.exports = User;
