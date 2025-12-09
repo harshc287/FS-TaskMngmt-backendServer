@@ -19,7 +19,9 @@ async function createTask(req, res){
 // Get tasks
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.findAll()
+    const tasks = await Task.findAll({
+      attributes: ["id", "title", "status", "priority", "startDate", "endDate"]
+    })
     res.status(200).send({taks:tasks, success:true})
 
   } catch (err) {
@@ -28,22 +30,6 @@ const getTasks = async (req, res) => {
 };
 
 
-
-//getalltask
-
-async function getAllTask(req, res){
-  try {
-    const tasks = await Task.findAll({
-        attributes:["id", "title", "status", "startDate","endDate"]
-    })
-    res.status(200).send({task:tasks, success:true})
-
-  } catch (error) {
-    res.status(500).send({msg:"server error", success:false})
-    
-  }
-}
-
 //getTaskByID
 async function getTaskByID(req, res){
   console.log(req.params.ID)
@@ -51,7 +37,7 @@ async function getTaskByID(req, res){
   try {
     const task = await Task.findByPk(id)
     if(!task){
-      res.status(400).send({msg:"task not found", success: false})
+      res.status(404).send({msg:"task not found", success: false})
 
     }else{
       res.status(200).send({success:true, task:task})
@@ -65,19 +51,25 @@ async function getTaskByID(req, res){
 
 //queryTaskTitle
 
-async function queryTaskTitle(req, res){
-  console.log(req.query)
-  const{tname} = req.query
+async function queryTaskTitle(req, res) {
+  const { tname } = req.query
+
   try {
     const taskByTitle = await Task.findOne({
-      where:{title:tname}
+      where: { title: tname }
     })
-    if(!taskByTitle){
-      res.status(400).send({msg:"task not found", success:false})
+
+    if (!taskByTitle) {
+      return res.status(404).send({ msg: "Task not found", success: false })
     }
-    res.status(200).send({success:true, task:taskByTitle})
+
+    return res.status(200).send({
+      success: true,
+      task: taskByTitle
+    })
+
   } catch (error) {
-    res.status(500).send({msg: "server error", success: false})
+    return res.status(500).send({ msg: "Server Error", success: false })
   }
 }
 
@@ -89,19 +81,23 @@ async function updateTask(req, res){
   console.log(req.body)
   console.log(req.params)
     const ID = req.params.ID
-    const{priority, startDate, endDate} = req.body
+    const{status, priority, startDate, endDate} = req.body
 
   try {
     const [Updated] = await Task.update(
-      {priority, startDate, endDate},
+      {status, priority, startDate, endDate},
       {where:{id:ID}}
     )
     if(Updated === 0){
-      res.status(400).send({msg:"task not found"})
+      res.status(400).send({msg:"task not found", success: false})
     }
-    res.status(200).send({success: true, msg:"task Updated successfully"})
-  } catch (err) {
-    res.status(500).json({msg:"server error" });
+     return res.status(200).send({
+      success: true,
+      msg: "Task updated successfully"
+    }) 
+
+  }catch (err) {
+    res.status(500).json({msg:"server error", success: false });
   }
 };
 
@@ -117,7 +113,11 @@ async function deleteTask(req,res){
         if(!taskDeleted){
             res.status(400).send({msg:"Task not found", success:false})
         }
-        res.status(200).send({msg:"Task deleted successfully", success:true})
+          return res.status(200).send({
+            success: true,
+            msg: "Task deleted successfully"
+    })
+
     } catch (error) {
         res.status(500).send({msg:"Server Error"})
     }
@@ -125,10 +125,10 @@ async function deleteTask(req,res){
 
 module.exports = {
   deleteTask,
-  getAllTask, 
   getTaskByID,
   updateTask, 
   createTask, 
   getTasks, 
-  queryTaskTitle}
+  queryTaskTitle
+}
  

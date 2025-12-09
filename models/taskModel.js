@@ -29,7 +29,7 @@ const Task = sequelize.define("Task", {
     startDate:{
         type: DataTypes.DATE
     },
-       endDate:{
+    endDate:{
         type: DataTypes.DATE
     }
 },{

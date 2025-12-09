@@ -24,4 +24,4 @@ app.use('/api/tasks', taskRoutes );
 
 
 
-app.listen(port, ()=> console.log(`Example of app Listining on port ${port}!`))
+app.listen(port, ()=> console.log(`✅ Server is running on port ${port}`))

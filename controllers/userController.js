@@ -44,9 +44,7 @@ exports.loginUser = async(req, res )=>{
                 role: user.role
             }
             
-        const token = jwt.sign(payload, process.env.JWT_SECRET,{
-            expiresIn: "1d",
-        });
+        const token = jwt.sign(payload, process.env.JWT_SECRET);
  
         res.json({msg: "Login successful",token})
         
@@ -55,12 +53,140 @@ exports.loginUser = async(req, res )=>{
     }
 }
 
-// GET ALL USERS (admin only)
-exports.getUsers = async(req, res) =>{
+
+exports.getUserInfo = async (req, res) => {
     try {
-        const users = await User.findAll({attributes: {exclude:["password"]}})
-        res.json(users)
+        const user = await User.findByPk(req.user.id,{
+            attributes:{exclude:["password"]}
+        })
+
+         res.json(user);
+
     } catch (error) {
-        res.status(500).json({msg:error.message})
+        res.status(500).json({msg: error.message})
     }
 }
+
+// USER UPDATE OWN PROFILE
+exports.updateUser = async (req, res) => {
+    try {
+        const { ID } = req.params;
+
+        if (parseInt(ID) !== req.user.id)
+            return res.status(403).json({ msg: "Unauthorized action" });
+
+        const { name, email, password } = req.body;
+
+        const user = await User.findByPk(ID);
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        let hashed = user.password;
+        if (password) hashed = await bcrypt.hash(password, 10);
+
+        await user.update({
+            name: name || user.name,
+            email: email || user.email,
+            password: hashed
+        });
+
+        res.json({ msg: "Profile updated successfully", user });
+
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+
+// USER DELETE OWN PROFILE
+exports.deleteUser = async (req, res) => {
+    try {
+        const { ID } = req.params;
+
+        if (parseInt(ID) !== req.user.id)
+            return res.status(403).json({ msg: "Unauthorized action" });
+
+        const user = await User.findByPk(ID);
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        await user.destroy();
+
+        res.json({ msg: "Account deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+// ADMIN: GET ALL USERS
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: { exclude: ["password"] }
+        });
+
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+// ADMIN: GET USER BY ID
+exports.getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findByPk(id, {
+            attributes: { exclude: ["password"] }
+        });
+
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        res.json(user);
+
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+// ADMIN: UPDATE ANY USER
+exports.updateUserByAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, password, role } = req.body;
+
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        let hashed = user.password;
+        if (password) hashed = await bcrypt.hash(password, 10);
+
+        await user.update({
+            name: name || user.name,
+            email: email || user.email,
+            password: hashed,
+            role: role || user.role
+        });
+
+        res.json({ msg: "User updated successfully", user });
+
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+// ADMIN: DELETE ANY USER
+exports.deleteUserByAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        await user.destroy();
+
+        res.json({ msg: "User deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
