@@ -123,12 +123,78 @@ async function deleteTask(req,res){
     }
 }
 
+
+async function getCompletedTasks(req, res) {
+  try {
+    const tasks = await Task.findAll({ where: { status: "Completed" } })
+    return res.status(200).send({ tasks, success: true })
+  } catch (error) {
+    return res.status(500).send({ msg: "Server Error", success: false })
+  }
+}
+
+
+async function getHighestPriorityTasks(req, res) {
+  try {
+    const tasks = await Task.findAll({ where: { priority: "Critical" } })
+    return res.status(200).send({ tasks, success: true })
+  } catch (error) {
+    return res.status(500).send({ msg: "Server Error", success: false })
+  }
+}
+
+
+async function getTasksCompletedBetween(req, res) {
+  const { startDate, endDate } = req.query
+
+  if (!startDate || !endDate) {
+    return res.status(400).send({ msg: "startDate and endDate are required", success: false })
+  }
+
+  try {
+    const tasks = await Task.findAll({
+      where: {
+        status: "Completed",
+        endDate: {
+          [Op.between]: [new Date(startDate), new Date(endDate)]
+        }
+      }
+    })
+
+    return res.status(200).send({ tasks, success: true })
+  } catch (error) {
+    return res.status(500).send({ msg: "Server Error", success: false })
+  }
+}
+
+
+async function statusUpdate(req, res) {
+  const { ID } = req.params
+  const { status } = req.body
+
+  try {
+    const [updated] = await Task.update({ status }, { where: { id: ID } })
+
+    if (updated === 0) {
+      return res.status(404).send({ msg: "Task not found", success: false })
+    }
+
+    return res.status(200).send({ msg: "Status updated successfully", success: true })
+  } catch (error) {
+    return res.status(500).send({ msg: "Server Error", success: false })
+  }
+}
+
 module.exports = {
   deleteTask,
   getTaskByID,
   updateTask, 
   createTask, 
   getTasks, 
-  queryTaskTitle
+  queryTaskTitle,
+  getCompletedTasks,
+  getHighestPriorityTasks,
+  getTasksCompletedBetween,
+  statusUpdate
 }
  

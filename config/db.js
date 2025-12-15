@@ -34,7 +34,7 @@ async function syncDB({force = false, alter= false} = {}){
     }
 }
 
-syncDB();
+
 testConnection()
 
 module.exports = { sequelize, testConnection, syncDB };

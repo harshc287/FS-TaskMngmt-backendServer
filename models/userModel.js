@@ -25,9 +25,17 @@ password:{
     allowNull:false,
 
 },
-    role:{
-        type: DataTypes.ENUM("admin", "user"),
-        defaultValue: "user"
+role:{
+    type: DataTypes.ENUM("admin", "user"),
+    defaultValue: "user"
+},
+address: {
+    type: DataTypes.STRING,
+
+},
+    updatedBy: {
+        type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true
     }
 
 } , {tableName : "users", timestamps: true})

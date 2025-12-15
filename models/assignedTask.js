@@ -8,35 +8,22 @@ const AssignedTask = sequelize.define("AssignedTask",{
         autoIncrement: true
     },
 
-    taskTitle:{
+    taskId:{
         type: DataTypes.STRING,
         allowNull: false,
     },
-    description:{
-        type: DataTypes.TEXT,
-        allowNull: true,
+    userId: {
+        type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: false
     },
-    assignedTo:{
-        type: DataTypes.INTEGER,
-        allowNull: false,
+    createdBy: {
+        type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true
     },
-     assignedBy:{
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    status:{
-        type: DataTypes.ENUM("pending", "in-progress", "completed"),
-        defaultValue:"pending",
-    },
-
-    priority:{
-        type: DataTypes.ENUM("low", "medium", "high"),
-        defaultValue: "medium",
-    },
-    dueDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-    },
+    updatedBy: {
+        type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true
+    }
 
 },{
     tableName: "assigned_tasks",
