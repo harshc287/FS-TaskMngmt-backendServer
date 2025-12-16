@@ -9,7 +9,7 @@ const AssignedTask = sequelize.define("AssignedTask",{
     },
 
     taskId:{
-        type: DataTypes.STRING,
+        type: DataTypes.BIGINT.UNSIGNED,
         allowNull: false,
     },
     userId: {

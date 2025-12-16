@@ -40,4 +40,11 @@ address: {
 
 } , {tableName : "users", timestamps: true})
 
+User.beforeCreate(async (user) => {
+    if (user.password) {
+        user.password = await bcrypt.hash(user.password, 10)
+    }
+})
+
+
 module.exports = User;

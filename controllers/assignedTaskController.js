@@ -1,4 +1,4 @@
-const  {User}  = require('../models/userModel')
+const  User  = require('../models/userModel')
 const AssignTask = require('../models/assignedTask')
 const Task = require('../models/taskModel')
 

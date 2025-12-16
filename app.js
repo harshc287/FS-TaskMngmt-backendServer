@@ -5,6 +5,7 @@ const taskRoutes = require('./routes/taskRoutes')
 const userRoutes = require("./routes/userRoute")
 const assignedTaskRoutes = require("./routes/assignedTaskRoutes")
 const {testConnection, syncDB} = require('./config/db')
+require('./models');
 testConnection();
 
 
