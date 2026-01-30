@@ -6,7 +6,7 @@ async function createTask(req, res){
   try {
     const newTask = await Task.create(req.body)
     if(newTask){
-      res.status(200).send({msg:"task created successfully...", success:true})
+      res.status(200).send({task: newTask, success:true})
     }else{
       res.status(400).send({msg:"error while creating task...", success:false})
 
@@ -22,7 +22,7 @@ const getTasks = async (req, res) => {
     const tasks = await Task.findAll({
       attributes: ["id", "title", "status", "priority", "startDate", "endDate"]
     })
-    res.status(200).send({taks:tasks, success:true})
+    res.status(200).send({tasks, success:true})
 
   } catch (err) {
     res.status(500).json({msg:"server error", success: false });
@@ -104,7 +104,7 @@ async function updateTask(req, res){
 // Delete a task
 async function deleteTask(req,res){
     console.log(req.params)
-    const {ID} = req.params
+    const ID = Number(req.params.ID);
     try {
         const taskDeleted = await Task.destroy({
             where:{id:ID}
